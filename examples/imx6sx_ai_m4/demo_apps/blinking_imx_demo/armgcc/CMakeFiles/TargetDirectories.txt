@@ -1,0 +1,3 @@
+/home/radipta/workspace/FreeRTOS_BSP_1.0.1_iMX6SX/examples/imx6sx_ai_m4/demo_apps/blinking_imx_demo/armgcc/CMakeFiles/rebuild_cache.dir
+/home/radipta/workspace/FreeRTOS_BSP_1.0.1_iMX6SX/examples/imx6sx_ai_m4/demo_apps/blinking_imx_demo/armgcc/CMakeFiles/edit_cache.dir
+/home/radipta/workspace/FreeRTOS_BSP_1.0.1_iMX6SX/examples/imx6sx_ai_m4/demo_apps/blinking_imx_demo/armgcc/CMakeFiles/blinking_imx_demo_epit.dir

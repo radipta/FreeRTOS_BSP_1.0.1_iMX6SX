@@ -1,0 +1,10 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/radipta/workspace/FreeRTOS_BSP_1.0.1_iMX6SX/platform/devices/MCIMX6X/startup/gcc/startup_MCIMX6X_M4.S
+
