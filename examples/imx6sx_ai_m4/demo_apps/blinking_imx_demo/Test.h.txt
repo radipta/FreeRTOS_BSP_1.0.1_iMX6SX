@@ -19,7 +19,8 @@
 /*
  * test for task synchronization
  */
-//#define tes1 1
+#define synch 1
+
 
 /*
  * allocate and store value inside memory and evaluate each value and address
@@ -83,7 +84,7 @@
  */
 #define Difpriority 0
 #define CreateQ 1
-#define QMode FIFO
+#define QMode LIFO
 #define CreateSem 1
 
 #define CreateQF 0

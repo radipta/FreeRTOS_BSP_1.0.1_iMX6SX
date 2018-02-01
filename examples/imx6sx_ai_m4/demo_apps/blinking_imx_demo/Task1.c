@@ -17,8 +17,57 @@ void delays(uint32_t const num){
 
 int Init_Task1 (void)
 {
+	//xTaskCreate(Task1, "Task1", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate(Task1, "Task1", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	PRINTF("Pass Task1 Creation\n");
+}
+
+
+void queuecount(uint32_t message,uint32_t timeout)
+{
+    int tampung;
+    if(flagqueue==0)
+    {
+        //->>start_timer();
+        queue_send(&queue1,&message,timeout);
+        //->>tampung=gets();
+        //->>stop_timer();
+        PRINTF(" TLSF queue: send %d\n",  message);
+    }
+    else
+    {
+        //->>start_timer();
+        xQueueSend(queue,&message,timeout);
+        //->>tampung=gets();
+        //->>stop_timer();
+        PRINTF(" FREERTOS queue: send %d\n",  message);
+    }
+
+}
+void queuegetcount(void* message,uint32_t timeout)
+{
+    int tampung;
+    uint32_t test=0;
+    if(flagqueue==0)
+    {
+        //->>start_timer();
+        queue_get(&queue1,&test,timeout);
+        //->>tampung=gets();
+        //->>stop_timer();
+        PRINTF("== TLSF get queue: data %d\n",  test);
+    }
+    else
+    {
+        //->>start_timer();
+        uint32_t hasil=xQueueGenericReceive(queue,&test,timeout,pdFALSE);
+        //->>tampung=gets();
+        //->>stop_timer();
+        if(hasil)
+            PRINTF("== FREERTOS get queue: data %d\n",  test);
+        else
+            PRINTF("gagal\n");
+    }
+
 }
 
 void Task1(void const *argument)
@@ -27,15 +76,39 @@ void Task1(void const *argument)
 	char *tamp1,*tamp;
 	int flag=0,flags=0;
 	TickType_t freq=80;
+	int tes1 = 1;
 
 	/*
 	 * Semaphore test 1
 		Menggunakan 1 thread untuk mengambil 3 token dan merelease 3 token
 		Disertai validasi
 	
+	
+
+	
 	 */
+
+	if(tes1==1)
+	{
+		uint32_t Semtoken, data, tampung;
+		PRINTF("========= Synhcronisation test : Task 1 run inside synch =======\n");
+		if(Semaphorecount(0))
+		{
+			PRINTF("Task 1 take token\n");
+			//sending data to queue
+			data=1001;	
+			queuecount(data,0);
+			//PRINTF("Task 1 send data : 1001\n");
+			if(Semaphoregivecount(0)){
+				PRINTF("Task 1 release token\n");
+			}
+		}
+	}
+
 	if(SemaphoreTest1)
 	{
+
+		uint32_t Semtoken;
 		PRINTF("========= Semaphore Test 1 =======\n");
 		int i=0;
 		//GPIO_ResetBits(GPIOD,GPIO_Pin_13);
@@ -46,7 +119,9 @@ void Task1(void const *argument)
 			{
 				
 				//PRINTF("semaphore task 1 take %d\n",getTick());
+
 				PRINTF("semaphore task 1 take token\n");
+
 			}
 			else
 			{
@@ -55,12 +130,12 @@ void Task1(void const *argument)
 			}
 			i++;
 		}		
-		uint32_t Semtoken;
+		
 		if(flagsemph==0)
 			Semtoken=Semaphore_GetCount(&sem1);
 		else
 			Semtoken=MaxSem;
-		PRINTF("Semaphore token : %d\n",Semtoken);
+		PRINTF("Semaphore taken : %d\n",Semtoken);
 		if(Semtoken==MaxSem)
 		{
 			i=0;
@@ -84,7 +159,7 @@ void Task1(void const *argument)
 		if(flagsemph==0)
 		{
 			Semtoken=Semaphore_GetCount(&sem1);
-			PRINTF("Semaphore token after its release %d\n",Semtoken);
+			PRINTF("Semaphore taken after its release %d\n",Semtoken);
 			if(Semtoken==0)
 			{
 				PRINTF("Semaphore 1st Test Success\n");

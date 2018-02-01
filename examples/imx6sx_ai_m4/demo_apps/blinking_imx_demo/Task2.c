@@ -160,8 +160,20 @@ void Task2(void const *argument)
 	// 	}
 	// }
 
-	/* new testing */
 
+	/* new testing below*/
+
+	// if(){
+	// 	uint32_t tamp;
+	// 	if(Semaphore_GetCount(&sem1)==1){
+	// 		queuegetcount(&tamp,0);
+	// 		PRINTF("task 2 grab data : %d", tamp);
+	// 	}
+	// 	else{
+	// 		vTaskDelay(freq);
+	// 	}
+
+	// }
 	if(QueueTest1)
 	{
 		/*

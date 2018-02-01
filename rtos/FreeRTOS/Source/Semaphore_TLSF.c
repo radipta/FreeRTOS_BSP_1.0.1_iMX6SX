@@ -224,6 +224,185 @@ int Semaphore_release(Counting_Semph* id,uint32_t timeout)
 	return 1;
 }
 
+
+/*
+
+int Semaphore_take(Counting_Semph *id,uint32_t timeout)
+{
+	uint32_t pilih=0;
+	id=(Counting_Semph*)id->address;
+	//PRINTF("posisi Semp %x\n",id);
+	taskENTER_CRITICAL();
+	if(id==NULL)
+	{
+		taskEXIT_CRITICAL();
+		return 0;
+	}
+	uint32_t tokentemp=id->token;
+	tokentemp++;
+	if(tokentemp > id->maxtoken)
+	{
+		if(id->strmode==0)
+		{
+			pilih=1;
+			PRINTF("pilih 1\n");
+		}
+
+		else if(id->strmode==1&&checkSemTCB()==0)
+			pilih=1;
+	}
+	if(pilih==1)
+	{
+		PRINTF("masuk blok\n");
+		id->token=tokentemp;
+		if(timeout==0)
+		{
+			PRINTF("Timeout not defined\n");
+			taskEXIT_CRITICAL();
+			return 0;
+		}
+		if(id->time==0)
+		{
+			id->time=getTick();
+		}
+		PRINTF("time %d\n",id->time);
+		PRINTF("timeout %d\n",timeout);
+		uint32_t tick=getTick();
+		if(id->time > timeout)
+		{
+			id->time=tick+timeout;
+		}
+		taskEXIT_CRITICAL();
+		vTaskSuspendAll();
+		uint32_t timewake;
+		timeout-=tick-id->time;
+		id->time=timeout;
+		timewake=tick+timeout;
+		PRINTF("blok thread timeout %d timewake %d\n",timeout,timewake);
+		vListInsert(&(id->TaskWaitSemaphore),getCurrentListTCB());
+		delaytask(timewake);
+		if( xTaskResumeAll() == pdFALSE )
+		{
+			id->time=0;
+			portYIELD_WITHIN_API();
+		}
+		return 0;
+	}
+	else
+	{
+		taskEXIT_CRITICAL();
+		LinkedTask *Task;
+		//PRINTF("token %d\n",id->token);
+		//PRINTF("TASK ADDR %x %x\n",&Task,Task);
+		//PRINTF("TAsk %x\n",Task->next);
+		if(id->strmode==1)
+		{
+			if(checkSemTCB()==0)
+			{
+				uint32_t temp=(uint32_t)getCurrentTCB();
+				Createlist(&id);
+				insertTask(temp,&id);
+				id->token=tokentemp;
+				Task = id->linktask;
+			}
+			else
+			{
+				//PRINTF("TCB %x\n",getCurrentTCB());
+				return 0;
+			}
+		}
+		else
+		{
+			id->token=tokentemp;
+			Task = id->linktask;
+		}
+	}
+	//taskEXIT_CRITICAL();
+	return 1;
+}
+
+int Semaphore_release(Counting_Semph* id,uint32_t timeout)
+{
+	//PRINTF("release\n");
+	id=(Counting_Semph*)id->address;
+	taskENTER_CRITICAL();
+	if(id==NULL)
+	{
+		taskEXIT_CRITICAL();
+		return 0;
+	}
+	if(id->token > id->maxtoken)
+	{
+		id->token=id->maxtoken;
+		//PRINTF("token jadi max %d\n",id->token);
+	}
+	int tokentemp=id->token;
+	tokentemp-=1;
+	if(tokentemp < 0)
+	{
+		id->token=0;
+		//PRINTF("masuk token %d\n",id->token);
+		if(timeout==0)
+		{
+			PRINTF("Timeout not defined");
+			taskEXIT_CRITICAL();
+			return 0;
+		}
+		if(id->time==0)
+		{
+			id->time=getTick();
+		}
+		uint32_t tick=getTick();
+		if(id->time > timeout)
+		{
+			id->time=tick+timeout;
+			PRINTF("time %d\n",id->time);
+			PRINTF("tick %d\n",tick);
+		}
+		else
+		{
+			PRINTF("time %d\n",id->time);
+						PRINTF("tick %d\n",tick);
+		}
+		taskEXIT_CRITICAL();
+		vTaskSuspendAll();
+		uint32_t timewake;
+		timeout-=tick-id->time;
+		id->time=timeout;
+		timewake=tick+timeout;
+		//PRINTF("blok thread timeout %d timewake %d\n",timeout,timewake);
+		vListInsert(&(id->TaskWaitSemaphore),getCurrentListTCB());
+		delaytask(timewake);
+		if( xTaskResumeAll() == pdFALSE )
+		{
+			id->time=0;
+			//PRINTF("yield\n");
+			portYIELD_WITHIN_API();
+		}
+		return 0;
+	}
+	else
+	{
+		taskEXIT_CRITICAL();
+		id->token=tokentemp;
+		//PRINTF("TOKEN %d\n",id->token);
+		if(id->strmode==1)
+			deleteTask(&id);
+		if(listLIST_IS_EMPTY(&(id->TaskWaitSemaphore))== 0)
+		{
+			//PRINTF("list tidak kosong\n");
+			if(xTaskRemoveFromEventList(&(id->TaskWaitSemaphore)))
+			{
+				//PRINTF("resume\n");
+				portYIELD_WITHIN_API();
+			}
+		}
+	}
+	return 1;
+}
+
+*/
+
 uint32_t Semaphore_GetCount(Counting_Semph* id)
 {
 	id=(Counting_Semph*)id->address;
